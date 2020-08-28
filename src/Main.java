@@ -1,9 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class Main {
 
@@ -20,6 +18,9 @@ public class Main {
         int num = 0, num1 = 0;
         int longestString; // длиннейшая строка
         Set usedLetter = new HashSet(); // множество букв, которые уже были использованы
+        Set bothWordLetter = new HashSet(); // буква в обоих словах
+        Map<Character, Character> associatedChars = new HashMap<>(); // карта связанных букв
+        Character currentLetter = null;
 
         // Разбить на две строки
         for (char character: inputStringArray) {
@@ -29,34 +30,58 @@ public class Main {
             stringArray1[num] = character;
             num ++;
         }
-//         string1 = String.valueOf(stringArray1);
         for (int i=0; i < inputStringLength-num-1; i++) {
             stringArray2[i] = inputStringArray[num+i+1];
         }
-//         string2 = String.valueOf(stringArray2);
-        // тестовый вывод на экран
-//        System.out.println(string1);
-//        System.out.println(string2);
-
 
         // Можно ли превратить первую строку во вторую?
         if (stringArray1.length > stringArray2.length) {
             longestString = stringArray1.length;
         } else longestString = stringArray2.length;
         for (int i = 0; i < longestString; i++) {
-            if ((stringArray1[i] != stringArray2[i])&&(isCirillic(stringArray2[i]))&&!(isUsedLetter(stringArray2[i], usedLetter))) {
-                stringArray1[i] = stringArray2[i];
+            if ((stringArray1[i] != stringArray2[i]) && (isCirillic(stringArray2[i])) && // проверка является ли кириллицей и одинаковы ли символы
+                    !(isUsedLetter(stringArray2[i], usedLetter))) { // проверка использовалось ли ранее
+
+               // stringArray1[i] = stringArray2[i];
+                associatedChars.put(stringArray1[i], stringArray2[i]);
                 usedLetter.add(stringArray2[i]);
             }
+
         }
+        for (int i=0; i < longestString; i++) {
+
+
+
+
+            if (isUsedLetter(stringArray2[i], usedLetter) &&  // если содержит использованную букву
+                    !associatedChars.containsValue(stringArray1[i])) { // проверяем есть ли одинаковые буквы в двух словах
+                currentLetter = associatedChars.get(stringArray1[i]);
+                stringArray1[i] = currentLetter;
+            } else if (associatedChars.containsValue(stringArray1[i])) { // если содержит одинаковые буквы в двух словах
+                currentLetter = associatedChars.get(stringArray1[i]);
+                //stringArray1[i] = currentLetter;
+                for (int j=i; j < longestString; j++) {
+                    if (stringArray1[i] == stringArray2[j]) {
+                        stringArray1[j] = currentLetter;
+                    }
+                }
+//                stringArray1[i] = (char) ('я');
+//                associatedChars.put(stringArray1[i], currentLetter);
+//                usedLetter.add(stringArray1[i]);
+            }
+        }
+
         System.out.println(String.valueOf(stringArray1));
         // если можно вывести 1, если нет то 0
-
-
+        string1 = String.valueOf(stringArray1);
+        string2 = String.valueOf(stringArray2);
+        if (string1.equals(string2)) {
+            System.out.println(1);  // можно преобразовать
+        } else System.out.println(0); // нельзя преобразовать
     }
 
-    static boolean isCirillic(char character) {   // проверка является ли кириллицей
-        if (((character > 'а')&&(character < 'я'))||(character == 'ё')) {
+    static boolean isCirillic(char character) {   // проверка является ли кириллицей в нижнем регистре
+        if (((character >= 'а')&&(character <= 'я'))||(character == 'ё')) {
             return true;
         }
         return false;
@@ -68,4 +93,6 @@ public class Main {
         }
         return false;
     }
+
+
 }
