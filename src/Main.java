@@ -17,10 +17,12 @@ public class Main {
         char[] stringArray1 = new char[indexOfSpace], stringArray2 = new char[inputStringLength - indexOfSpace - 1]; // массив символов из 1 и 2 слова
         int num = 0, num1 = 0;
         int longestString; // длиннейшая строка
-        Set usedLetter = new HashSet(); // множество букв, которые уже были использованы
+        Set usedLetter = new HashSet(); // множество букв, которые уже были использованы во втором слове
+        Set usedLetter1 = new HashSet(); // множество букв, которые уже были использованы в 1 слове
         Set bothWordLetter = new HashSet(); // буква в обоих словах
         Map<Character, Character> associatedChars = new HashMap<>(); // карта связанных букв
         Character currentLetter = null;
+        Character additional = 'я';
 
         // Разбить на две строки
         for (char character: inputStringArray) {
@@ -41,17 +43,14 @@ public class Main {
         for (int i = 0; i < longestString; i++) {
             if ((stringArray1[i] != stringArray2[i]) && (isCirillic(stringArray2[i])) && // проверка является ли кириллицей и одинаковы ли символы
                     !(isUsedLetter(stringArray2[i], usedLetter))) { // проверка использовалось ли ранее
-
+                usedLetter1.add(stringArray1[i]);
                // stringArray1[i] = stringArray2[i];
                 associatedChars.put(stringArray1[i], stringArray2[i]);
                 usedLetter.add(stringArray2[i]);
             }
-
         }
+
         for (int i=0; i < longestString; i++) {
-
-
-
 
             if (isUsedLetter(stringArray2[i], usedLetter) &&  // если содержит использованную букву
                     !associatedChars.containsValue(stringArray1[i])) { // проверяем есть ли одинаковые буквы в двух словах
@@ -59,15 +58,25 @@ public class Main {
                 stringArray1[i] = currentLetter;
             } else if (associatedChars.containsValue(stringArray1[i])) { // если содержит одинаковые буквы в двух словах
                 currentLetter = associatedChars.get(stringArray1[i]);
-                //stringArray1[i] = currentLetter;
                 for (int j=i; j < longestString; j++) {
-                    if (stringArray1[i] == stringArray2[j]) {
-                        stringArray1[j] = currentLetter;
+                    if (stringArray1[j] == currentLetter) {  // смотрим на каких позициях слова1 есть одинаковые буквы с текущей позицией слова 2
+
+                      //  while (true) {                    // меняем только на букву не существующую в словах
+                            //if (!usedLetter.contains(additional - num2)||!usedLetter1.contains(additional - num2)) {
+                                stringArray1[j] = additional; // временно заменяем дублирующую букву на новую
+                       //         break;
+                           // } else num2++;
+                       // }
+                        if (!usedLetter.contains(additional)) {   // проверка использовалась ли ранее
+                            associatedChars.put(stringArray1[j], stringArray2[j]); // добавляем новую комбинацию в мапу
+                            usedLetter.add(additional);
+                        }
                     }
+
+
                 }
-//                stringArray1[i] = (char) ('я');
-//                associatedChars.put(stringArray1[i], currentLetter);
-//                usedLetter.add(stringArray1[i]);
+                if (stringArray1[i] != currentLetter) {  // чтобы избежать лишнего присвоения проверка на дубль
+                    stringArray1[i] = currentLetter; }
             }
         }
 
