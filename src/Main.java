@@ -15,14 +15,14 @@ public class Main {
         int indexOfSpace = inputString.indexOf(' '); // номер индекса знака "пробел" в полученной строке
         int inputStringLength = inputString.length(); // длина входной строки
         char[] stringArray1 = new char[indexOfSpace], stringArray2 = new char[inputStringLength - indexOfSpace - 1]; // массив символов из 1 и 2 слова
-        int num = 0, num1 = 0;
+        int num = 0;
         int longestString; // длиннейшая строка
         Set usedLetter = new HashSet(); // множество букв, которые уже были использованы во втором слове
         Set usedLetter1 = new HashSet(); // множество букв, которые уже были использованы в 1 слове
-        Set bothWordLetter = new HashSet(); // буква в обоих словах
         Map<Character, Character> associatedChars = new HashMap<>(); // карта связанных букв
         Character currentLetter = null;
         Character additional = 'я';
+        char[] addString;  // временный массив
 
         // Разбить на две строки
         for (char character: inputStringArray) {
@@ -37,12 +37,32 @@ public class Main {
         }
 
         // Можно ли превратить первую строку во вторую?
-        if (stringArray1.length > stringArray2.length) {
-            longestString = stringArray1.length;
+        if (stringArray1.length > stringArray2.length) {  // проверяем длинну строки, если 1 слово больше 2
+            longestString = stringArray1.length;   // находим более длинное слово
+            addString = stringArray2;      // временно сохраняем слово в доп. массив
+            stringArray2 = new char[longestString];  //увеличиваем массив до размера большего слова
+            for (int i = 0; i < addString.length; i++ ) {     // копируем данные из временного массива в новый
+                stringArray2[i] = addString[i];
+            }
+            for (int i = 0; i < longestString - stringArray2.length; i++) {   // заполняем пустые позиции массива нулями
+                stringArray2[i+stringArray2.length] = 0;
+            }
+        } else if (stringArray1.length < stringArray2.length) {  // повторяем предыдущий алгоритм если 2 слово больше первого
+            longestString = stringArray2.length;
+            addString = stringArray2;
+            stringArray1 = new char[longestString];
+            for (int i = 0; i < addString.length; i++ ) {
+                stringArray1[i] = addString[i];
+            }
+            for (int i = 0; i < longestString - stringArray1.length; i++) { // заполняем пустые позиции массива нулями
+                stringArray1[i + stringArray1.length] = 0;
+            }
         } else longestString = stringArray2.length;
+
         for (int i = 0; i < longestString; i++) {
             if ((stringArray1[i] != stringArray2[i]) && (isCirillic(stringArray2[i])) && // проверка является ли кириллицей и одинаковы ли символы
-                    !(isUsedLetter(stringArray2[i], usedLetter))) { // проверка использовалось ли ранее
+                    !(isUsedLetter(stringArray2[i], usedLetter)) &&  // проверка использовался ли ранее символ во 2 слове
+                    !(isUsedLetter(stringArray1[i], usedLetter1))) { // проверка использовался ли ранее символ в 1 слове
                 usedLetter1.add(stringArray1[i]);
                // stringArray1[i] = stringArray2[i];
                 associatedChars.put(stringArray1[i], stringArray2[i]);
@@ -56,7 +76,8 @@ public class Main {
                     !associatedChars.containsValue(stringArray1[i])) { // проверяем есть ли одинаковые буквы в двух словах
                 currentLetter = associatedChars.get(stringArray1[i]);
                 stringArray1[i] = currentLetter;
-            } else if (associatedChars.containsValue(stringArray1[i])) { // если содержит одинаковые буквы в двух словах
+            } else if (associatedChars.containsValue(stringArray1[i]) &&  // если содержит одинаковые буквы в двух словах
+                    (isUsedLetter(stringArray1[i], usedLetter1))) {   // использовалась ли данная буква в первом слове
                 currentLetter = associatedChars.get(stringArray1[i]);
                 for (int j=i; j < longestString; j++) {
                     if (stringArray1[j] == currentLetter) {  // смотрим на каких позициях слова1 есть одинаковые буквы с текущей позицией слова 2
@@ -80,7 +101,7 @@ public class Main {
             }
         }
 
-        System.out.println(String.valueOf(stringArray1));
+        //System.out.println(String.valueOf(stringArray1));
         // если можно вывести 1, если нет то 0
         string1 = String.valueOf(stringArray1);
         string2 = String.valueOf(stringArray2);
