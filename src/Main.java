@@ -37,7 +37,7 @@ public class Main {
         }
 
         // Можно ли превратить первую строку во вторую?
-        if (stringArray1.length > stringArray2.length) {  // проверяем длинну строки, если 1 слово больше 2
+      /*  if (stringArray1.length > stringArray2.length) {  // проверяем длинну строки, если 1 слово больше 2
             longestString = stringArray1.length;   // находим более длинное слово
             addString = stringArray2;      // временно сохраняем слово в доп. массив
             stringArray2 = new char[longestString];  //увеличиваем массив до размера большего слова
@@ -57,23 +57,29 @@ public class Main {
             for (int i = 0; i < longestString - stringArray1.length; i++) { // заполняем пустые позиции массива нулями
                 stringArray1[i + stringArray1.length] = 0;
             }
-        } else longestString = stringArray2.length;
+        } */
+        if (stringArray1.length > stringArray2.length) {  // проверяем длину слова, если 1 слово больше 2
+            stringArray2 = wordChanging(stringArray1, stringArray2);
+        } else if (stringArray1.length < stringArray2.length) {  // повторяем предыдущий алгоритм если 2 слово больше первого
+            stringArray1 = wordChanging(stringArray2, stringArray1);
+        }
+        longestString = stringArray2.length;    // определяем длину первого слова
+
 
         for (int i = 0; i < longestString; i++) {
             if ((stringArray1[i] != stringArray2[i]) && (isCirillic(stringArray2[i])) && // проверка является ли кириллицей и одинаковы ли символы
                     !(isUsedLetter(stringArray2[i], usedLetter)) &&  // проверка использовался ли ранее символ во 2 слове
                     !(isUsedLetter(stringArray1[i], usedLetter1))) { // проверка использовался ли ранее символ в 1 слове
                 usedLetter1.add(stringArray1[i]);
-               // stringArray1[i] = stringArray2[i];
                 associatedChars.put(stringArray1[i], stringArray2[i]);
                 usedLetter.add(stringArray2[i]);
             }
         }
 
         for (int i=0; i < longestString; i++) {
-
             if (isUsedLetter(stringArray2[i], usedLetter) &&  // если содержит использованную букву
-                    !associatedChars.containsValue(stringArray1[i])) { // проверяем есть ли одинаковые буквы в двух словах
+                    !associatedChars.containsValue(stringArray1[i]) &&  // проверяем есть ли одинаковые буквы в двух словах
+                    associatedChars.containsKey(stringArray1[i])) { // проверяем есть ли данная буква в 1 слове
                 currentLetter = associatedChars.get(stringArray1[i]);
                 stringArray1[i] = currentLetter;
             } else if (associatedChars.containsValue(stringArray1[i]) &&  // если содержит одинаковые буквы в двух словах
@@ -81,27 +87,19 @@ public class Main {
                 currentLetter = associatedChars.get(stringArray1[i]);
                 for (int j=i; j < longestString; j++) {
                     if (stringArray1[j] == currentLetter) {  // смотрим на каких позициях слова1 есть одинаковые буквы с текущей позицией слова 2
-
-                      //  while (true) {                    // меняем только на букву не существующую в словах
-                            //if (!usedLetter.contains(additional - num2)||!usedLetter1.contains(additional - num2)) {
                                 stringArray1[j] = additional; // временно заменяем дублирующую букву на новую
-                       //         break;
-                           // } else num2++;
-                       // }
-                        if (!usedLetter.contains(additional)) {   // проверка использовалась ли ранее
+                            if (!usedLetter.contains(additional)) {   // проверка использовалась ли ранее
                             associatedChars.put(stringArray1[j], stringArray2[j]); // добавляем новую комбинацию в мапу
                             usedLetter.add(additional);
                         }
                     }
-
-
                 }
                 if (stringArray1[i] != currentLetter) {  // чтобы избежать лишнего присвоения проверка на дубль
                     stringArray1[i] = currentLetter; }
             }
         }
 
-        //System.out.println(String.valueOf(stringArray1));
+        System.out.println(String.valueOf(stringArray1)); //проверка выходного слова
         // если можно вывести 1, если нет то 0
         string1 = String.valueOf(stringArray1);
         string2 = String.valueOf(stringArray2);
@@ -122,6 +120,19 @@ public class Main {
             return true;
         }
         return false;
+    }
+
+    static char[] wordChanging(char[] stringArray1, char[] stringArray2) {
+        int longestString = stringArray1.length;   // находим более длинное слово
+        char[] addString = stringArray2;      // временно сохраняем слово в доп. массив
+        stringArray2 = new char[longestString];  //увеличиваем массив до размера большего слова
+        for (int i = 0; i < addString.length; i++ ) {     // копируем данные из временного массива в новый
+            stringArray2[i] = addString[i];
+        }
+        for (int i = addString.length; i < longestString; i++) {   // заполняем пустые позиции массива нулями
+            stringArray2[i] = 0;
+        }
+        return stringArray2;
     }
 
 
