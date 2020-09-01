@@ -22,7 +22,6 @@ public class Main {
         Map<Character, Character> associatedChars = new HashMap<>(); // карта связанных букв
         Character currentLetter = null;
         Character additional = 'я';
-        char[] addString;  // временный массив
 
         // Разбить на две строки
         for (char character: inputStringArray) {
@@ -37,34 +36,13 @@ public class Main {
         }
 
         // Можно ли превратить первую строку во вторую?
-      /*  if (stringArray1.length > stringArray2.length) {  // проверяем длинну строки, если 1 слово больше 2
-            longestString = stringArray1.length;   // находим более длинное слово
-            addString = stringArray2;      // временно сохраняем слово в доп. массив
-            stringArray2 = new char[longestString];  //увеличиваем массив до размера большего слова
-            for (int i = 0; i < addString.length; i++ ) {     // копируем данные из временного массива в новый
-                stringArray2[i] = addString[i];
-            }
-            for (int i = 0; i < longestString - stringArray2.length; i++) {   // заполняем пустые позиции массива нулями
-                stringArray2[i+stringArray2.length] = 0;
-            }
-        } else if (stringArray1.length < stringArray2.length) {  // повторяем предыдущий алгоритм если 2 слово больше первого
-            longestString = stringArray2.length;
-            addString = stringArray2;
-            stringArray1 = new char[longestString];
-            for (int i = 0; i < addString.length; i++ ) {
-                stringArray1[i] = addString[i];
-            }
-            for (int i = 0; i < longestString - stringArray1.length; i++) { // заполняем пустые позиции массива нулями
-                stringArray1[i + stringArray1.length] = 0;
-            }
-        } */
+
         if (stringArray1.length > stringArray2.length) {  // проверяем длину слова, если 1 слово больше 2
             stringArray2 = wordChanging(stringArray1, stringArray2);
         } else if (stringArray1.length < stringArray2.length) {  // повторяем предыдущий алгоритм если 2 слово больше первого
             stringArray1 = wordChanging(stringArray2, stringArray1);
         }
         longestString = stringArray2.length;    // определяем длину первого слова
-
 
         for (int i = 0; i < longestString; i++) {
             if ((stringArray1[i] != stringArray2[i]) && (isCirillic(stringArray2[i])) && // проверка является ли кириллицей и одинаковы ли символы
@@ -99,7 +77,6 @@ public class Main {
             }
         }
 
-        System.out.println(String.valueOf(stringArray1)); //проверка выходного слова
         // если можно вывести 1, если нет то 0
         string1 = String.valueOf(stringArray1);
         string2 = String.valueOf(stringArray2);
@@ -134,6 +111,5 @@ public class Main {
         }
         return stringArray2;
     }
-
 
 }
